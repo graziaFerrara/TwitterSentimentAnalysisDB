@@ -1,16 +1,20 @@
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
-import re, time
+import re
+import time
 
 class Scraper:
 
     def __init__(self):
 
-        #ChromeDriverManager().install()
-        self.driver = webdriver.Chrome()
+        # ChromeDriverManager().install()
+        options = webdriver.firefox.options.Options()
+        options.add_argument("--headless")
+        options.set_preference('intl.accept_languages', 'en-GB')
+        self.driver = webdriver.Firefox(options=options)
 
-    def get_page(self, url, login_time = 0):
+    def get_page(self, url, login_time=0):
         self.driver.get(url)
         time.sleep(login_time)
         return self.driver.page_source

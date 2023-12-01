@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
     print("Saving tweets...")
     # save the tweets_data.json file
-    with open("database/data/tweets/tweets_data.json", "w") as f:
+    with open("tweets_data.json", "w") as f:
         json.dump(tweets_data, f, indent=4)
 
     print("Done!")
