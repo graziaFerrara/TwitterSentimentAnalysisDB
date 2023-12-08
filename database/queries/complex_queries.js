@@ -1,4 +1,4 @@
-const fs = require('fs');
+var fs = require('fs');
 
 /*
     1. AVERAGE SENTIMENT PER TREND
@@ -212,7 +212,7 @@ function operation2(db) {
 
 function operation3(db, trendName, trendLocation, trendDate) {
 
-    const trend = db.getCollection("Trends").findOne({
+    var trend = db.getCollection("Trends").findOne({
         name: trendName,
         location: trendLocation,
         date: trendDate
@@ -224,9 +224,9 @@ function operation3(db, trendName, trendLocation, trendDate) {
         };
     }
 
-    const tweetIds = trend.tweets;
+    var tweetIds = trend.tweets;
 
-    const comments = db.getCollection("Tweets").aggregate([
+    var comments = db.getCollection("Tweets").aggregate([
         {
             $match: {
                 _id: {
@@ -285,7 +285,7 @@ function operation4() {
 
     userScore = {};
 
-    const users = db.getCollection('Users').find({});
+    var users = db.getCollection('Users').find({});
 
     users.forEach(user => {
 
@@ -621,24 +621,24 @@ function operation7(db, trendName, trendLocation, trendDate) {
     return res;
 }
 
-function executionTime(db, operation) {
+function executionTime(operation) {
     var start = new Date();
-    operation(db);
+    operation.operation(...operation.parameters)
     var end = new Date() - start;
     // convert ms to s
     return end / 1000;
 }
 
 function convertArrayOfObjectsToCSV(data) {
-    const header = Object.keys(data[0]).join(',');
-    const csv = data.map(row =>
+    var header = Object.keys(data[0]).join(',');
+    var csv = data.map(row =>
         Object.values(row).map(value => JSON.stringify(value)).join(',')
     );
     csv.unshift(header);
     return csv.join('\n');
 }
 
-PERFORMANCES = false // set to false to disable performances
+PERFORMANCES = true // set to false to disable performances
 NUM_TESTS = 10 // number of times to execute the operation
 
 db = connect("localhost:27017")
@@ -650,66 +650,58 @@ username = "@Ex_puppypaws"
 
 db = db.getSiblingDB('Twitter')
 
+var operations = [
+    {
+        name: "AVERAGE SENTIMENT PER TREND",
+        operation: operation1,
+        parameters: [db]
+    },
+    {
+        name: "SENTIMENT PERCENTAGES",
+        operation: operation2,
+        parameters: [db]
+    },
+    {
+        name: "TREND DIFFUSION DEGREE",
+        operation: operation3,
+        parameters: [db, trendName, trendLocation, trendDate]
+    },
+    {
+        name: "USER COHERENCE SCORE",
+        operation: operation4,
+        parameters: [db]
+    },
+    {
+        name: "USER'S SENTIMENT PERCENTAGES",
+        operation: operation5,
+        parameters: [db, username]
+    },
+    {
+        name: "ENGAGEMENT METRICS COMPUTATION",
+        operation: operation6,
+        parameters: [db]
+    },
+    {
+        name: "DISCUSSIONS' DETECTION",
+        operation: operation7,
+        parameters: [db, trendName, trendLocation, trendDate]
+    }
+]
+
 if (!PERFORMANCES) {
 
-    print("1. AVERAGE SENTIMENT PER TREND")
-    printjson(operation1(db));
-
-    print("2. SENTIMENT PERCENTAGES")
-    printjson(operation2(db));
-
-    print("3. TREND DIFFUSION DEGREE")
-    printjson(operation3(db, trendName, trendLocation, trendDate));
-
-    print("4. USER COHERENCE SCORE")
-    printjson(operation4());
-
-    print("5. USER'S SENTIMENT PERCENTAGES")
-    printjson(operation5(db, username));
-
-    print("6. ENGAGEMENT METRICS COMPUTATION")
-    printjson(operation6(db));
-
-    print("7. DISCUSSIONS' DETECTION")
-    printjson(operation7(db, trendName, trendLocation, trendDate));
+    operations.forEach(operation => {
+        print(operation.name);
+        printjson(operation.operation(...operation.parameters));
+    });
 
 } else {
 
-    var operations = [
-        {
-            name: "AVERAGE SENTIMENT PER TREND",
-            operation: operation1
-        },
-        {
-            name: "SENTIMENT PERCENTAGES",
-            operation: operation2
-        },
-        {
-            name: "TREND DIFFUSION DEGREE",
-            operation: operation3
-        },
-        {
-            name: "USER COHERENCE SCORE",
-            operation: operation4
-        },
-        {
-            name: "USER'S SENTIMENT PERCENTAGES",
-            operation: operation5
-        },
-        {
-            name: "ENGAGEMENT METRICS COMPUTATION",
-            operation: operation6
-        },
-        {
-            name: "DISCUSSIONS' DETECTION",
-            operation: operation7
-        }
-    ]
     executions = [];
     time = 0;
     operations.forEach(operation => {
         for (i = 0; i < NUM_TESTS; i++) {
-            time += executionTime(db, operation.operation);
+            time += executionTime(operation);
         }
         executions.push({
             operation: operation.name,
