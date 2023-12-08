@@ -638,7 +638,7 @@ function convertArrayOfObjectsToCSV(data) {
     return csv.join('\n');
 }
 
-PERFORMANCES = true // set to false to disable performances
+PERFORMANCES = false // set to false to disable performances
 NUM_TESTS = 10 // number of times to execute the operation
 
 db = connect("localhost:27017")
