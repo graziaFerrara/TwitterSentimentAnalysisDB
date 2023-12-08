@@ -4,61 +4,65 @@
     average the scores obtained 
 */
 
+function operation4() {
+
+    userScore = {};
+
+    const users = db.getCollection('Users').find({});
+
+    users.forEach(user => {
+
+        // get all the tweets written by the user
+        tweets = db.getCollection('Tweets').find({ user_id: user._id });
+
+        // group the tweets by trends
+        tweetsByTrend = {};
+        tweets.forEach(tweet => {
+            var trends = tweet.trends;
+            trends.forEach(trend => {
+                if (tweetsByTrend[trend]) {
+                    tweetsByTrend[trend].push(tweet);
+                } else {
+                    tweetsByTrend[trend] = [tweet];
+                }
+            });
+        });
+
+        // for each trend, calculate the coherence score
+        var scores = {};
+        for (var trend in tweetsByTrend) {
+            tweets = tweetsByTrend[trend];
+            var sum = 0;
+            tweets.forEach(tweet => {
+                sum += tweet.sentiment;
+            });
+            avg = tweets.length > 0 ? sum / tweets.length : 0;
+            scores[trend] = avg;
+        }
+
+        // average the scores obtained
+        var sum = 0;
+        for (var key in scores) {
+            sum += scores[key];
+        }
+
+        userScore[user.username] = Object.values(scores).length > 0 ? sum / Object.values(scores).length : 0;
+
+    });
+
+    // min max normalization of the scores
+    var min = Math.min(...Object.values(userScore));
+    var max = Math.max(...Object.values(userScore));
+    for (var key in userScore) {
+        userScore[key] = (userScore[key] - min) / (max - min) * 100;
+    }
+
+    return userScore;
+
+}
+
 db = connect("localhost:27017")
 
 db = db.getSiblingDB('Twitter')
 
-result = db.getCollection("Users").aggregate([
-    {
-        $lookup: {
-            from: "Tweets",
-            localField: "tweets",
-            foreignField: "_id",
-            as: "userTweets"
-        }
-    },
-    {
-        $unwind: "$userTweets"
-    },
-    {
-        $lookup: {
-            from: "Trends",
-            localField: "userTweets.trends",
-            foreignField: "_id",
-            as: "tweetTrends"
-        }
-    },
-    {
-        $unwind: "$tweetTrends"
-    },
-    {
-        $group: {
-            _id: {
-                userId: "$_id",
-                trendId: "$tweetTrends._id"
-            },
-            userTweets: { $push: "$userTweets" },
-            coherenceScores: { $avg: "$userTweets.sentiment" } 
-        }
-    },
-    {
-        $group: {
-            _id: "$_id.userId",
-            coherenceScoresByUser: {
-                $push: {
-                    trendId: "$_id.trendId",
-                    coherenceScore: "$coherenceScores"
-                }
-            }
-        }
-    },
-    {
-        $project: {
-            _id: 0,
-            userId: "$_id",
-            coherenceScoresByUser: 1
-        }
-    }
-]);
-
-printjson(result.toArray())
+printjson(operation4())

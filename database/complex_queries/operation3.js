@@ -5,48 +5,76 @@
     clearly an approximation)
 */
 
-db = connect("localhost:27017")
+function operation3(db, trendName, trendLocation, trendDate) {
 
-db = db.getSiblingDB('Twitter')
+    const trend = db.getCollection("Trends").findOne({
+        name: trendName,
+        location: trendLocation,
+        date: trendDate
+    });
 
-trendName = "#Halloween"
+    if (!trend) {
+        return {
+            error: "Trend not found"
+        };
+    }
 
-result = db.getCollection('Tweets').aggregate(
-    [
+    const tweetIds = trend.tweets;
+    
+    const comments = db.getCollection("Tweets").aggregate([
         {
             $match: {
-                text: {
-                    $regex: '#Halloween',
-                    $options: 'i'
+                _id: {
+                    $in: tweetIds
                 }
             }
-        }, {
-            $lookup: {
-                from: 'Users',
-                localField: 'user_id',
-                foreignField: '_id',
-                as: 'usersData'
-            }
-        }, {
+        },
+        {
             $unwind: {
-                path: '$usersData'
-            }
-        }, {
-            $group: {
-                _id: '$_id',
-                usersReached: {
-                    $sum: {
-                        $subtract: [
-                            '$usersData.followers', 1
-                        ]
-                    }
-                }
+                path: '$comments'
             }
         }
-    ]
-)
 
-printjson(result.toArray())
+    ]).toArray();
 
+    ids = {};
 
+    comments.forEach(element => {
+        comment_user_id = element.comments.user_id;
+        // if the user with tweet_user_id is in the Users collection, then add it to the ids
+        // if the user with comment_user_id is in the Users collection, then add it to the ids
+        user = db.getCollection("Users").findOne({ _id: comment_user_id });
+        if (user) {
+            ids[comment_user_id] = user.followers;
+        }
+    });
 
+    tweetIds.forEach(element => {
+        tweet_user_id = db.getCollection("Tweets").findOne({ _id: element }).user_id;
+        user = db.getCollection("Users").findOne({ _id: tweet_user_id });
+        if (user) {
+            ids[tweet_user_id] = user.followers;
+        }
+    });
+        
+    var sum = 0;
+    for (var key in ids) {
+        sum += ids[key];
+    }
+
+    return {
+        trendName: trendName,
+        trendLocation: trendLocation,
+        trendDate: trendDate,
+        diffusionDegree: sum
+    };
+}
+
+// Assuming the rest of your code remains unchanged
+db = connect("localhost:27017");
+db = db.getSiblingDB('Twitter');
+trendName = "#Halloween";
+trendLocation = "Italy";
+trendDate = "2023-11-01T16:29:31.292726";
+
+printjson(operation3(db, trendName, trendLocation, trendDate));
