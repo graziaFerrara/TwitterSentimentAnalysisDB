@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 /*
     1. AVERAGE SENTIMENT PER TREND
     For each trend, select all the tweets associated with the trend and show the
@@ -45,7 +47,7 @@ function operation1(db) {
                         $avg: '$tweetsData.sentiment'
                     }
                 }
-            },{
+            }, {
                 $project: {
                     _id: 0,
                     name: '$_id.name',
@@ -70,136 +72,136 @@ function operation1(db) {
     print the percentage of them that obtained that particular sentiment.
  */
 
-    function operation2(db) {
-    
-        trends = db.getCollection('Trends').find({});
-    
-        results = [];
-    
-        trends.forEach(function (trend) {
-            result = db.getCollection('Trends').aggregate(
-                [
-                    {
-                        $match: {
-                            name: trend.name,
-                            location: trend.location,
-                            date: trend.date
-                        }
-                    }, {
-                        $unwind: {
-                            path: '$tweets'
-                        }
-                    }, {
-                        $lookup: {
-                            from: 'Tweets',
-                            localField: 'tweets',
-                            foreignField: '_id',
-                            as: 'tweetsData'
-                        }
-                    }, {
-                        $unwind: {
-                            path: '$tweetsData'
-                        }
-                    }, {
-                        $group: {
-                            _id: '$_id',
-                            totalTweets: {
-                                $sum: 1
-                            },
-                            positiveTweets: {
-                                $sum: {
-                                    $cond: [
-                                        {
-                                            $gt: [
-                                                '$tweetsData.sentiment', 0.2
-                                            ]
-                                        }, 1, 0
-                                    ]
-                                }
-                            },
-                            neutralTweets: {
-                                $sum: {
-                                    $cond: [
-                                        {
-                                            $and: [
-                                                {
-                                                    $gte: [
-                                                        '$tweetsData.sentiment', -0.2
-                                                    ]
-                                                }, {
-                                                    $lte: [
-                                                        '$tweetsData.sentiment', 0.2
-                                                    ]
-                                                }
-                                            ]
-                                        }, 1, 0
-                                    ]
-                                }
-                            },
-                            negativeTweets: {
-                                $sum: {
-                                    $cond: [
-                                        {
-                                            $lt: [
-                                                '$tweetsData.sentiment', -0.2
-                                            ]
-                                        }, 1, 0
-                                    ]
-                                }
-                            }
-                        }
-                    }, {
-                        $project: {
-                            totalTweets: 1,
-                            positivePercentage: {
-                                $multiply: [
+function operation2(db) {
+
+    trends = db.getCollection('Trends').find({});
+
+    results = [];
+
+    trends.forEach(function (trend) {
+        result = db.getCollection('Trends').aggregate(
+            [
+                {
+                    $match: {
+                        name: trend.name,
+                        location: trend.location,
+                        date: trend.date
+                    }
+                }, {
+                    $unwind: {
+                        path: '$tweets'
+                    }
+                }, {
+                    $lookup: {
+                        from: 'Tweets',
+                        localField: 'tweets',
+                        foreignField: '_id',
+                        as: 'tweetsData'
+                    }
+                }, {
+                    $unwind: {
+                        path: '$tweetsData'
+                    }
+                }, {
+                    $group: {
+                        _id: '$_id',
+                        totalTweets: {
+                            $sum: 1
+                        },
+                        positiveTweets: {
+                            $sum: {
+                                $cond: [
                                     {
-                                        $divide: [
-                                            '$positiveTweets', '$totalTweets'
+                                        $gt: [
+                                            '$tweetsData.sentiment', 0.2
                                         ]
-                                    }, 100
-                                ]
-                            },
-                            neutralPercentage: {
-                                $multiply: [
-                                    {
-                                        $divide: [
-                                            '$neutralTweets', '$totalTweets'
-                                        ]
-                                    }, 100
-                                ]
-                            },
-                            negativePercentage: {
-                                $multiply: [
-                                    {
-                                        $divide: [
-                                            '$negativeTweets', '$totalTweets'
-                                        ]
-                                    }, 100
+                                    }, 1, 0
                                 ]
                             }
-                        }
-                    }, {
-                        $project: {
-                            _id: 0,
-                            name: trend.name,
-                            location: trend.location,
-                            date: trend.date,
-                            positivePercentage: 1,
-                            neutralPercentage: 1,
-                            negativePercentage: 1
+                        },
+                        neutralTweets: {
+                            $sum: {
+                                $cond: [
+                                    {
+                                        $and: [
+                                            {
+                                                $gte: [
+                                                    '$tweetsData.sentiment', -0.2
+                                                ]
+                                            }, {
+                                                $lte: [
+                                                    '$tweetsData.sentiment', 0.2
+                                                ]
+                                            }
+                                        ]
+                                    }, 1, 0
+                                ]
+                            }
+                        },
+                        negativeTweets: {
+                            $sum: {
+                                $cond: [
+                                    {
+                                        $lt: [
+                                            '$tweetsData.sentiment', -0.2
+                                        ]
+                                    }, 1, 0
+                                ]
+                            }
                         }
                     }
-                ]
-            );
-    
-            results.push(result.toArray()[0]);
-            
-        });
-    
-        return results;
-    
-    }
+                }, {
+                    $project: {
+                        totalTweets: 1,
+                        positivePercentage: {
+                            $multiply: [
+                                {
+                                    $divide: [
+                                        '$positiveTweets', '$totalTweets'
+                                    ]
+                                }, 100
+                            ]
+                        },
+                        neutralPercentage: {
+                            $multiply: [
+                                {
+                                    $divide: [
+                                        '$neutralTweets', '$totalTweets'
+                                    ]
+                                }, 100
+                            ]
+                        },
+                        negativePercentage: {
+                            $multiply: [
+                                {
+                                    $divide: [
+                                        '$negativeTweets', '$totalTweets'
+                                    ]
+                                }, 100
+                            ]
+                        }
+                    }
+                }, {
+                    $project: {
+                        _id: 0,
+                        name: trend.name,
+                        location: trend.location,
+                        date: trend.date,
+                        positivePercentage: 1,
+                        neutralPercentage: 1,
+                        negativePercentage: 1
+                    }
+                }
+            ]
+        );
+
+        results.push(result.toArray()[0]);
+
+    });
+
+    return results;
+
+}
 
 /*
     3. TREND DIFFUSION DEGREE
@@ -223,7 +225,7 @@ function operation3(db, trendName, trendLocation, trendDate) {
     }
 
     const tweetIds = trend.tweets;
-    
+
     const comments = db.getCollection("Tweets").aggregate([
         {
             $match: {
@@ -259,7 +261,7 @@ function operation3(db, trendName, trendLocation, trendDate) {
             ids[tweet_user_id] = user.followers;
         }
     });
-        
+
     var sum = 0;
     for (var key in ids) {
         sum += ids[key];
@@ -341,7 +343,7 @@ function operation4() {
     Given a user, take the tweets he wrote and calculate the percentages of positive, negative and neutral sentiment tweets.
 */
 
-function operation5(db, username){
+function operation5(db, username) {
 
     result = db.getCollection("Users").aggregate([
 
@@ -385,7 +387,7 @@ function operation5(db, username){
                 negativeTweets: { $sum: { $cond: [{ $lt: ['$userTweets.sentiment', -0.2] }, 1, 0] } },
                 totTweets: { $sum: 1 }
             }
-        }, 
+        },
         // compute the percentages and return the precentages and the usename
         {
             $project: {
@@ -407,7 +409,7 @@ function operation5(db, username){
     For each trend, compute the average number of likes, shares and retweets that its posts have received
 */
 
-function operation6(db){
+function operation6(db) {
 
     result = db.getCollection("Trends").aggregate([
         {
@@ -425,7 +427,7 @@ function operation6(db){
             $unwind: {
                 path: '$tweetsData'
             }
-        }, 
+        },
         {
             $group: {
                 _id: '$_id',
@@ -474,7 +476,7 @@ function operation6(db){
     identifying any discordant sentiments
 */
 
-function operation7(db, trendName, trendLocation, trendDate){
+function operation7(db, trendName, trendLocation, trendDate) {
 
     result = db.getCollection("Trends").aggregate([
         {
@@ -590,34 +592,54 @@ function operation7(db, trendName, trendLocation, trendDate){
                         else: false
                     }
                 }
-                
+
             }
         }, {
-          $project: {
-            _id: 0,
-            tweet: 1,
-            tweetText: 1,
-            comments: 1,
-            discussion: {
-              $cond: {
-                if: '$discussion',
-                then: true,
-                else: false
-              }
+            $project: {
+                _id: 0,
+                tweet: 1,
+                tweetText: 1,
+                comments: 1,
+                discussion: {
+                    $cond: {
+                        if: '$discussion',
+                        then: true,
+                        else: false
+                    }
+                }
             }
-          }
         }
     ])
-    
+
     res = []
     result.toArray().forEach(element => {
-      res.push({
-        tweetText: element.tweetText,
-        discussion: element.discussion
-      })
+        res.push({
+            tweetText: element.tweetText,
+            discussion: element.discussion
+        })
     });
     return res;
 }
+
+function executionTime(db, operation) {
+    var start = new Date();
+    operation(db);
+    var end = new Date() - start;
+    // convert ms to s
+    return end / 1000;
+}
+
+function convertArrayOfObjectsToCSV(data) {
+    const header = Object.keys(data[0]).join(',');
+    const csv = data.map(row =>
+        Object.values(row).map(value => JSON.stringify(value)).join(',')
+    );
+    csv.unshift(header);
+    return csv.join('\n');
+}
+
+PERFORMANCES = false // set to false to disable performances
+NUM_TESTS = 10 // number of times to execute the operation
 
 db = connect("localhost:27017")
 
@@ -628,25 +650,76 @@ username = "@Ex_puppypaws"
 
 db = db.getSiblingDB('Twitter')
 
-print("1. AVERAGE SENTIMENT PER TREND")
-printjson(operation1(db));
+if (!PERFORMANCES) {
 
-print("2. SENTIMENT PERCENTAGES")
-printjson(operation2(db));
+    print("1. AVERAGE SENTIMENT PER TREND")
+    printjson(operation1(db));
 
-print("3. TREND DIFFUSION DEGREE")
-printjson(operation3(db, trendName, trendLocation, trendDate));
+    print("2. SENTIMENT PERCENTAGES")
+    printjson(operation2(db));
 
-print("4. USER COHERENCE SCORE")
-printjson(operation4());
+    print("3. TREND DIFFUSION DEGREE")
+    printjson(operation3(db, trendName, trendLocation, trendDate));
 
-print("5. USER'S SENTIMENT PERCENTAGES")
-printjson(operation5(db, username));
+    print("4. USER COHERENCE SCORE")
+    printjson(operation4());
 
-print("6. ENGAGEMENT METRICS COMPUTATION")
-printjson(operation6(db));
+    print("5. USER'S SENTIMENT PERCENTAGES")
+    printjson(operation5(db, username));
 
-print("7. DISCUSSIONS' DETECTION")
-printjson(operation7(db, trendName, trendLocation, trendDate));
+    print("6. ENGAGEMENT METRICS COMPUTATION")
+    printjson(operation6(db));
 
+    print("7. DISCUSSIONS' DETECTION")
+    printjson(operation7(db, trendName, trendLocation, trendDate));
 
+} else {
+
+    var operations = [
+        {
+            name: "AVERAGE SENTIMENT PER TREND",
+            operation: operation1
+        },
+        {
+            name: "SENTIMENT PERCENTAGES",
+            operation: operation2
+        },
+        {
+            name: "TREND DIFFUSION DEGREE",
+            operation: operation3
+        },
+        {
+            name: "USER COHERENCE SCORE",
+            operation: operation4
+        },
+        {
+            name: "USER'S SENTIMENT PERCENTAGES",
+            operation: operation5
+        },
+        {
+            name: "ENGAGEMENT METRICS COMPUTATION",
+            operation: operation6
+        },
+        {
+            name: "DISCUSSIONS' DETECTION",
+            operation: operation7
+        }
+    ]
+    executions = [];
+    time = 0;
+    operations.forEach(operation => {
+        for (i = 0; i < NUM_TESTS; i++) {
+            time += executionTime(db, operation.operation);
+        }
+        executions.push({
+            operation: operation.name,
+            time: time / NUM_TESTS
+        });
+        time = 0;
+    });
+
+    fs.writeFile('performances/complex_queries_performances.csv', convertArrayOfObjectsToCSV(executions), function (err) {
+        if (err) return console.log(err);
+    });
+
+}
