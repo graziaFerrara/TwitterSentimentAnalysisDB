@@ -48,7 +48,7 @@ This module has been set up to obtain real time data from X in a almost automati
 
 ### `scraper.py`
 
-The scraper general class uses a Selenium WebDriver to scrape web paes. It has a method to reach a page giveb the url and to close the driver.
+The scraper general class uses a Selenium WebDriver to scrape web pages. It has a method to reach a page giveb the url and to close the driver.
 
 ### `twitter_scraper.py`
 
