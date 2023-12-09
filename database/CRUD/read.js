@@ -1,3 +1,11 @@
+/**
+ * The function "getTrendsByTweet" retrieves trends associated with a given tweet from a database.
+ * @param db - The "db" parameter is likely referring to a database object or connection that allows
+ * you to interact with a database. It is used to perform database operations such as finding documents
+ * or records.
+ * @param tweet_id - The `tweet_id` parameter is the unique identifier of a tweet in the database.
+ * @returns an array of trends.
+ */
 function getTrendsByTweet(db, tweet_id) {
     var tweet = db.Tweets.findOne({_id: tweet_id});
     if (tweet == null) {
@@ -18,6 +26,14 @@ function getTrendsByTweet(db, tweet_id) {
     return trends;
 }
 
+/**
+ * The function retrieves tweets associated with a given trend from a database.
+ * @param db - The "db" parameter is likely referring to a database object or connection that allows
+ * you to interact with a database. It is used to query the database for trends and tweets.
+ * @param trend_id - The `trend_id` parameter is the unique identifier of a trend in the database. It
+ * is used to retrieve the tweets associated with that trend.
+ * @returns an array of tweets that are associated with a given trend.
+ */
 function getTweetsByTrend(db, trend_id) {
     var trend = db.Trends.findOne({_id: trend_id});
     if (trend == null) {
@@ -38,6 +54,15 @@ function getTweetsByTrend(db, trend_id) {
     return tweets;
 }
 
+/**
+ * The function retrieves tweets by a given user from a database.
+ * @param db - The "db" parameter is likely referring to a database object or connection that allows
+ * you to interact with a database. It is used to perform database operations such as finding documents
+ * or records.
+ * @param user_id - The user_id parameter is the unique identifier of the user whose tweets we want to
+ * retrieve.
+ * @returns an array of tweets.
+ */
 function getTweetsByUser(db, user_id) {
     var user = db.Users.findOne({_id: user_id});
     if (user == null) {
@@ -58,6 +83,14 @@ function getTweetsByUser(db, user_id) {
     return tweets;
 }
 
+/**
+ * The function retrieves a user from a database based on the tweet ID.
+ * @param db - The "db" parameter is likely referring to a database object or connection that is used
+ * to interact with a database. It is used to perform operations such as finding documents in
+ * collections.
+ * @param tweet_id - The tweet_id parameter is the unique identifier of a tweet in the database.
+ * @returns the user object if it exists in the database, otherwise it is returning the value 1.
+ */
 function getUserByTweet(db, tweet_id) {
     var tweet = db.Tweets.findOne({_id: tweet_id});
     if (tweet == null) {
@@ -74,6 +107,15 @@ function getUserByTweet(db, tweet_id) {
     return user;
 }
 
+/**
+ * The function retrieves comments associated with a specific tweet from a database.
+ * @param db - The "db" parameter is likely referring to a database object or connection that is used
+ * to interact with a database. It is used to query the database and retrieve the necessary data.
+ * @param tweet_id - The tweet_id parameter is the unique identifier of a tweet in the database. It is
+ * used to retrieve the comments associated with that tweet.
+ * @returns the comments associated with a given tweet. If the tweet is not found or if there are no
+ * comments, it will return 1.
+ */
 function getCommentsByTweet(db, tweet_id) {
     var tweet = db.Tweets.findOne({_id: tweet_id});
     if (tweet == null) {

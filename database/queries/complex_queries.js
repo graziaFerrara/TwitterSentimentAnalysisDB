@@ -6,6 +6,15 @@ var fs = require('fs');
     sentiment obtained as the average of the sentiment of the selected tweets.
 */
 
+/**
+ * The function operation1 retrieves trends from a database, performs aggregation and lookup operations
+ * on the associated tweets, and returns the average sentiment for each trend.
+ * @param db - The "db" parameter is a reference to a database object. It is used to interact with the
+ * database and perform operations such as querying and aggregating data. In this code snippet, the
+ * "db" object is used to access collections and perform aggregation operations on them.
+ * @returns an array of objects that contain the name, location, date, and sentiment of each trend in
+ * the database.
+ */
 function operation1(db) {
 
     trends = db.getCollection('Trends').find({});
@@ -72,6 +81,14 @@ function operation1(db) {
     print the percentage of them that obtained that particular sentiment.
  */
 
+/**
+ * The function `operation2` retrieves data from a MongoDB database and performs aggregation operations
+ * to calculate the percentage of positive, neutral, and negative tweets for each trend.
+ * @param db - The "db" parameter is an object representing a database. It is used to perform
+ * operations on the database, such as querying collections and aggregating data.
+ * @returns an array of objects that contain the calculated percentages of positive, neutral, and
+ * negative tweets for each trend in the database.
+ */
 function operation2(db) {
 
     trends = db.getCollection('Trends').find({});
@@ -210,6 +227,20 @@ function operation2(db) {
     clearly an approximation)
 */
 
+/**
+ * The `operation3` function calculates the diffusion degree of a trend by summing the number of
+ * followers of users who have commented on tweets related to the trend and the number of followers of
+ * users who have posted tweets related to the trend.
+ * @param db - The "db" parameter is the database object that is used to interact with the database. It
+ * is assumed to be an instance of a database driver or an object that provides methods to perform
+ * database operations such as querying and updating data.
+ * @param trendName - The name of the trend you want to search for.
+ * @param trendLocation - The `trendLocation` parameter is the location of the trend. It specifies the
+ * location where the trend is happening, such as a city, country, or region.
+ * @param trendDate - The trendDate parameter represents the date of the trend. It is used to find the
+ * trend in the database based on its name, location, and date.
+ * @returns an object with the following properties:
+ */
 function operation3(db, trendName, trendLocation, trendDate) {
 
     var trend = db.getCollection("Trends").findOne({
@@ -281,6 +312,14 @@ function operation3(db, trendName, trendLocation, trendDate) {
     average the scores obtained 
 */
 
+/**
+ * The function calculates a coherence score for each user based on the sentiment of their tweets and
+ * normalizes the scores using min-max normalization.
+ * @returns an object called `userScore`. This object contains the coherence scores for each user in
+ * the database. The coherence scores are calculated based on the sentiment of the tweets written by
+ * each user, grouped by trends. The scores are then averaged and normalized using min-max
+ * normalization. The final scores are represented as percentages.
+ */
 function operation4() {
 
     userScore = {};
@@ -343,6 +382,17 @@ function operation4() {
     Given a user, take the tweets he wrote and calculate the percentages of positive, negative and neutral sentiment tweets.
 */
 
+/**
+ * The function operation5 retrieves the percentage of positive, neutral, and negative tweets for a
+ * given username from a MongoDB database.
+ * @param db - The "db" parameter is the database object that is used to interact with the database. It
+ * is typically an instance of a database driver or client that provides methods for querying and
+ * manipulating the database.
+ * @param username - The `username` parameter is the username of the user whose tweets we want to
+ * analyze.
+ * @returns an object that contains the username, positivePercentage, neutralPercentage, and
+ * negativePercentage.
+ */
 function operation5(db, username) {
 
     result = db.getCollection("Users").aggregate([
@@ -409,6 +459,14 @@ function operation5(db, username) {
     For each trend, compute the average number of likes, shares and retweets that its posts have received
 */
 
+/**
+ * The function operation6 performs an aggregation on a MongoDB collection to calculate the average
+ * likes, shares, and retweets for each trend.
+ * @param db - The "db" parameter is a reference to the database object. It is used to access the
+ * collections and perform operations on them.
+ * @returns an array of objects that contain the following properties: name, location, date, avgLikes,
+ * avgShares, and avgRetweets.
+ */
 function operation6(db) {
 
     result = db.getCollection("Trends").aggregate([
@@ -476,6 +534,20 @@ function operation6(db) {
     identifying any discordant sentiments
 */
 
+/**
+ * The function operation7 retrieves tweets and their comments from a database, classifies their
+ * sentiment, and determines if a discussion took place based on the sentiment of the comments.
+ * @param db - The "db" parameter is the database object that is used to interact with the database. It
+ * is assumed to be an instance of a database connection or client.
+ * @param trendName - The trendName parameter is the name of the trend you want to search for. It is
+ * used to filter the trends in the database based on their name.
+ * @param trendLocation - The `trendLocation` parameter represents the location of the trend. It is
+ * used to filter the trends based on their location.
+ * @param trendDate - The `trendDate` parameter represents the date of the trend. It is used to filter
+ * the trends in the database based on their date.
+ * @returns an array of objects. Each object contains the tweet text and a boolean value indicating
+ * whether a discussion took place for that tweet.
+ */
 function operation7(db, trendName, trendLocation, trendDate) {
 
     result = db.getCollection("Trends").aggregate([
@@ -621,6 +693,12 @@ function operation7(db, trendName, trendLocation, trendDate) {
     return res;
 }
 
+/**
+ * The function executionTime executes an operation and returns the time it took to execute the
+ * operation.
+ * @param {*} operation 
+ * @returns the time it took to execute the operation in seconds.
+ */
 function executionTime(operation) {
     var start = new Date();
     operation.operation(...operation.parameters)
@@ -629,6 +707,11 @@ function executionTime(operation) {
     return end / 1000;
 }
 
+/**
+ * The function convertArrayOfObjectsToCSV converts an array of objects to a CSV string.
+ * @param {*} data 
+ * @returns a CSV string.
+ */
 function convertArrayOfObjectsToCSV(data) {
     var header = Object.keys(data[0]).join(',');
     var csv = data.map(row =>

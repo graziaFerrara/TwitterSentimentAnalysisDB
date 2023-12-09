@@ -1,6 +1,12 @@
 var fs = require('fs');
 
 // Get the eldest user registered in the Users collection of the Twitter database.
+
+/**
+ * This function returns the eldest user registered in the Users collection of the Twitter database.
+ * @param {*} db 
+ * @returns {Object} The eldest user registered in the Users collection of the Twitter database.
+ */
 function getEldestUser(db){
 
     users = db.Users.find({}).sort({"joined_date": 1}).toArray()
@@ -13,6 +19,13 @@ function getEldestUser(db){
 }
 
 // Get the k most shared tweets in the Tweets collection of the Twitter database.
+
+/**
+ * The function returns the k most shared tweets in the Tweets collection of the Twitter database.
+ * @param {*} db 
+ * @param {*} k 
+ * @returns {Array} The k most shared tweets in the Tweets collection of the Twitter database.
+ */
 function getMostSharedTweets(db, k){
 
     tweets = db.Tweets.find({}).sort({shares: -1}).limit(k).toArray()
@@ -32,6 +45,13 @@ function getMostSharedTweets(db, k){
 }
 
 // Get the trends for which more than k tweets have been written
+
+/**
+ * The function returns the trends for which more than k tweets have been written.
+ * @param {*} db 
+ * @param {*} minTweets 
+ * @returns {Array} The trends for which more than k tweets have been written.
+ */
 function getPopularTrends(db, minTweets){
 
     trends = db.Trends.find({}).toArray()
@@ -59,6 +79,13 @@ function getPopularTrends(db, minTweets){
 }
 
 // Get the most popular users in the Users collection of the Twitter database given a minimum threshold of followers.
+
+/**
+ * The function returns the most popular users in the Users collection of the Twitter database given a minimum threshold of followers.
+ * @param {*} db 
+ * @param {*} minFollowers 
+ * @returns {Array} The most popular users in the Users collection of the Twitter database given a minimum threshold of followers.
+ */
 function getPopularUsers(db, minFollowers){
 
     users = db.Users.find({}).sort({"followers": -1}).toArray()
@@ -81,6 +108,12 @@ function getPopularUsers(db, minFollowers){
 
 }
 
+/**
+ * The function executionTime executes an operation and returns the time it took to execute the
+ * operation.
+ * @param {*} operation 
+ * @returns the time it took to execute the operation in seconds.
+ */
 function executionTime(operation) {
     var start = new Date();
     operation.operation(...operation.parameters)
@@ -89,6 +122,11 @@ function executionTime(operation) {
     return end / 1000;
 }
 
+/**
+ * The function convertArrayOfObjectsToCSV converts an array of objects to a CSV string.
+ * @param {*} data 
+ * @returns a CSV string.
+ */
 function convertArrayOfObjectsToCSV(data) {
     var header = Object.keys(data[0]).join(',');
     var csv = data.map(row =>

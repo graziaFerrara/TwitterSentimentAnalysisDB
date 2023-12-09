@@ -6,10 +6,30 @@ import json
 import sys
 
 def get_sentiment(text):
+    """
+    The function `get_sentiment` takes in a text as input and returns the sentiment polarity of the text
+    using the TextBlob library.
+    
+    :param text: The "text" parameter is a string that represents the text for which you want to
+    determine the sentiment. It can be any piece of text, such as a sentence, a paragraph, or a document
+    :return: The sentiment polarity of the given text.
+    """
     blob = TextBlob(text)
     return blob.sentiment.polarity
 
 def manage_users(users, tweet):
+    """
+    The function "manage_users" manages a dictionary of users and their tweets, adding new users and
+    their tweets if they don't already exist, and recursively adding comments to the appropriate user
+    and tweet.
+    
+    :param users: The `users` parameter is a dictionary that stores information about users. Each user
+    is identified by their username, and the value associated with each username is a dictionary
+    containing user information
+    :param tweet: The "tweet" parameter is a dictionary that represents a tweet. It contains information
+    such as the username of the user who posted the tweet, the text of the tweet, and any comments
+    associated with the tweet
+    """
 
     if tweet["username"] not in users:
 

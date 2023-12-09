@@ -1,3 +1,11 @@
+/**
+ * The function `deleteTweet` deletes a tweet from the database and removes its references from the
+ * user and trend collections.
+ * @param tweet_id - The tweet_id parameter is the unique identifier of the tweet that you want to
+ * delete.
+ * @returns either 1 or 0. If the tweet is not found (tweet == null), it returns 1. Otherwise, it
+ * returns 0 after deleting the tweet and updating the user and trend documents.
+ */
 function deleteTweet(tweet_id) {
 
     tweet = db.Tweets.findOne({ _id: tweet_id })
@@ -31,6 +39,13 @@ function deleteTweet(tweet_id) {
     }
 }
 
+/**
+ * The function `deleteTrend` deletes a trend and all associated tweets from the database.
+ * @param trend_id - The trend_id parameter is the unique identifier of the trend that you want to
+ * delete.
+ * @returns either 1 or 0. If the trend with the given trend_id does not exist or if the trend does not
+ * have any tweets, it will return 1. Otherwise, it will return 0.
+ */
 function deleteTrend(trend_id) {
 
     trend = db.Trends.findOne({ _id: trend_id })
@@ -74,6 +89,13 @@ function deleteTrend(trend_id) {
 
 }
 
+/**
+ * The function `deleteUser` deletes a user and all their associated tweets and trends from a database.
+ * @param user_id - The user_id parameter is the unique identifier of the user that you want to delete
+ * from the database.
+ * @returns either 1 or 0. If the user is not found or if the user's tweets are null, it will return 1.
+ * Otherwise, it will return 0.
+ */
 function deleteUser(user_id) {
 
     user = db.Users.findOne({ _id: user_id })
@@ -121,6 +143,14 @@ function deleteUser(user_id) {
 
 }
 
+/**
+ * The function `deleteComment` deletes a comment from a tweet and updates the necessary collections.
+ * @param tweet_id - The ID of the tweet that contains the comment you want to delete.
+ * @param comment_id - The comment_id parameter is the unique identifier of the comment that needs to
+ * be deleted.
+ * @returns 0 if the comment is successfully deleted, and 1 if there is an error (such as if the tweet
+ * or comment does not exist).
+ */
 function deleteComment(tweet_id, comment_id) {
     
     tweet = db.Tweets.findOne({ _id: tweet_id })

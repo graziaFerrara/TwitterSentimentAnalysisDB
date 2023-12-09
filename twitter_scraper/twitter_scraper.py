@@ -15,10 +15,13 @@ import re
 import time
 import datetime
 
-
+# The Twitter_scraper class is a subclass of the Scraper class.
 class Twitter_scraper(Scraper):
 
     def __login(self):
+        """
+        The above function is used to login to Twitter using a provided username and password.
+        """
 
         self.get_page("https://twitter.com/login")
         try:
@@ -61,6 +64,15 @@ class Twitter_scraper(Scraper):
         time.sleep(10)
 
     def __init__(self, username, password):
+        """
+        The function initializes an object with username, password, and other settings, and then calls a
+        private login method.
+        
+        :param username: The `username` parameter is used to store the username of the user. It is passed as
+        an argument to the `__init__` method when creating an instance of the class
+        :param password: The `password` parameter is used to store the password for the user. It is passed
+        as an argument to the `__init__` method when creating an instance of the class
+        """
         super().__init__()
         self.username = username
         self.password = password
@@ -72,45 +84,126 @@ class Twitter_scraper(Scraper):
         self.__login()
 
     def __scroll(self):
+        """
+        The function scrolls the window down by 500 pixels.
+        """
         self.driver.execute_script("window.scrollBy(0, 500);") 
 
     def get_driver_wait_time(self):
+        """
+        The function returns the driver wait time.
+        :return: The method is returning the value of the variable `self.driver_wait_time`.
+        """
         return self.driver_wait_time
 
     def get_scroll_wait_time(self):
+        """
+        The function `get_scroll_wait_time` returns the value of the `scroll_wait_time` attribute.
+        :return: The method is returning the value of the variable "scroll_wait_time".
+        """
         return self.scroll_wait_time
 
     def get_scroll_iterations(self):
+        """
+        The function `get_scroll_iterations` returns the value of the `scroll_iterations` attribute.
+        :return: The `self.scroll_iterations` value is being returned.
+        """
         return self.scroll_iterations
 
     def get_max_comments(self):
+        """
+        The function returns the value of the max_comments attribute.
+        :return: The method is returning the value of the attribute "max_comments".
+        """
         return self.max_comments
 
     def set_driver_wait_time(self, driver_wait_time):
+        """
+        The function sets the driver wait time attribute to a specified value.
+        
+        :param driver_wait_time: The `driver_wait_time` parameter is a variable that represents the amount
+        of time the driver should wait for an element to be present or visible before throwing an exception.
+        It is used in Selenium WebDriver to set the implicit wait time
+        """
         self.driver_wait_time = driver_wait_time
 
     def set_scroll_wait_time(self, scroll_wait_time):
+        """
+        The function sets the scroll wait time for an object.
+        
+        :param scroll_wait_time: The scroll_wait_time parameter is a variable that represents the amount of
+        time to wait between scrolling actions. It is used to control the speed at which scrolling occurs in
+        a program or application
+        """
         self.scroll_wait_time = scroll_wait_time
 
     def set_scroll_iterations(self, scroll_iterations):
+        """
+        The function sets the value of the scroll_iterations attribute.
+        
+        :param scroll_iterations: The parameter "scroll_iterations" is a value that determines the number of
+        times a scrolling action should be performed. It is used to set the value of the "scroll_iterations"
+        attribute of an object
+        """
         self.scroll_iterations = scroll_iterations
 
     def set_max_comments(self, max_comments):
+        """
+        The function sets the maximum number of comments for an object.
+        
+        :param max_comments: The `max_comments` parameter is an integer value that represents the maximum
+        number of comments that can be set for an object
+        """
         self.max_comments = max_comments
 
     def set_username(self, username):
+        """
+        The function sets the username attribute of an object.
+        
+        :param username: The `username` parameter is a string that represents the username that you want to
+        set for an object
+        """
         self.username = username
 
     def set_password(self, password):
+        """
+        The function sets the password attribute of an object to the given password.
+        
+        :param password: The `password` parameter is the value that will be assigned to the `password`
+        attribute of the object
+        """
         self.password = password
 
     def is_comments(self):
+        """
+        The function `is_comments` returns the value of the `comments` attribute.
+        :return: The method is_comments is returning the value of the attribute self.comments.
+        """
         return self.comments
 
     def set_comments(self, comments):
+        """
+        The function sets the comments attribute of an object to the provided comments.
+        
+        :param comments: The "comments" parameter is a variable that represents a collection of comments. It
+        is used to set the value of the "comments" attribute of an object
+        """
         self.comments = comments
 
     def __append_tweets_data(self, tweets_data, driver):
+        """
+        The function `__append_tweets_data` appends tweet data to a list of tweets, extracting
+        information such as username, name, text, replies, retweets, likes, shares, and URL from a web
+        page using Selenium.
+        
+        :param tweets_data: The `tweets_data` parameter is a list that stores the data of each tweet.
+        Each tweet is represented as a dictionary with the following keys: "username", "name", "text",
+        "replies", "retweets", "likes", "shares", and "url"
+        :param driver: The `driver` parameter is an instance of a web driver, such as Selenium's
+        WebDriver, that is used to interact with a web browser. It is used to find elements on a web
+        page and perform actions like clicking, typing, etc. In this code, the `driver` is used to
+        :return: The function does not explicitly return anything.
+        """
 
         try:
             twitter_elm = driver.find_elements(
@@ -174,6 +267,13 @@ class Twitter_scraper(Scraper):
                 pass
 
     def get_tweets(self, num_tweets):
+        """
+        The function `get_tweets` retrieves a specified number of tweets from a webpage, scrolling and
+        waiting for new tweets to load if necessary.
+        
+        :param num_tweets: The parameter `num_tweets` is the number of tweets that you want to retrieve
+        :return: a list of tweets data.
+        """
 
         tweets_data = []
 
@@ -206,6 +306,16 @@ class Twitter_scraper(Scraper):
         return tweets_data
 
     def search(self, query, num_tweets):
+        """
+        The function searches for tweets based on a given query and returns a specified number of tweets.
+        
+        :param query: The query parameter is the search term or hashtag that you want to search for on
+        Twitter. It can be any word or phrase that you want to find tweets about. If the query contains a
+        hashtag, it will be replaced with "%23" to ensure proper URL encoding
+        :param num_tweets: The parameter "num_tweets" is the number of tweets you want to retrieve from the
+        search results
+        :return: the list of tweets that match the given query, up to the specified number of tweets.
+        """
 
         query = query.replace('#', '%23')
         self.get_page(
@@ -216,6 +326,17 @@ class Twitter_scraper(Scraper):
         return tweets
 
     def search_for_trend(self, trend, num_tweets):
+        """
+        The function searches for a given trend on Twitter and returns a specified number of tweets related
+        to that trend.
+        
+        :param trend: The trend parameter is the keyword or hashtag that you want to search for on Twitter.
+        It can be any word or phrase that you want to find tweets about
+        :param num_tweets: The parameter "num_tweets" represents the number of tweets you want to retrieve
+        for the given trend
+        :return: the list of tweets that match the given trend, with the number of tweets specified by the
+        "num_tweets" parameter.
+        """
 
         trend = trend.replace('#', '%23')
         self.get_page(
@@ -226,6 +347,13 @@ class Twitter_scraper(Scraper):
         return tweets
     
     def get_tweet(self, id):
+        """
+        The `get_tweet` function retrieves the text content of a tweet given its ID.
+        
+        :param id: The "id" parameter in the "get_tweet" function is the unique identifier of the tweet. It
+        is used to construct the URL of the tweet page and retrieve the tweet text from that page
+        :return: the text of a tweet.
+        """
 
         # move to the tweet page
         self.get_page("https://twitter.com/username/status/{}".format(id))
@@ -248,8 +376,16 @@ class Twitter_scraper(Scraper):
 
         return text
 
-
     def get_trends(self):
+        """
+        The `get_trends` function retrieves trending topics on Twitter and returns a list of dictionaries
+        containing information about each trend, such as the trend name, number of posts, date, URL, and
+        location.
+        :return: a list of dictionaries containing information about the trending topics on Twitter. Each
+        dictionary includes the name of the trend, the number of posts related to the trend (if available),
+        the date and time of the trend, the URL to view the trend on Twitter, and the location where the
+        trend is happening.
+        """
 
         trends_data = []
 
@@ -296,10 +432,21 @@ class Twitter_scraper(Scraper):
         return trends_data
 
     def search_trends(self):
+        """
+        The function searches for trending topics on Twitter by accessing the home page and returning the
+        trends.
+        :return: the trends that are found on the Twitter homepage.
+        """
         self.get_page("https://twitter.com/home", 2)
         return self.get_trends()
 
     def get_user(self):
+        """
+        The function `get_user` retrieves various data about a user from a web page.
+        :return: a dictionary containing various user data such as profile name, username, verification
+        status, bio, location, URL, birth date, joined date, number of following, and number of
+        followers.
+        """
 
         user_data = {}
 
@@ -373,6 +520,16 @@ class Twitter_scraper(Scraper):
         return user_data
 
     def search_user(self, username):
+        """
+        The function searches for a user on Twitter using their username and returns their information if
+        found, otherwise it prints an error message.
+        
+        :param username: The `username` parameter is a string that represents the Twitter username of the
+        user you want to search for. It should be in the format "@username" where "username" is the actual
+        username of the user you want to search for
+        :return: a dictionary object representing the user found on Twitter with the given username. If the
+        user is not found, an empty dictionary is returned.
+        """
         self.get_page(
             "https://twitter.com/{}".format(username.replace('@', '')), 2)
         try:
@@ -383,6 +540,17 @@ class Twitter_scraper(Scraper):
         return user
 
     def get_comments(self, tweets):
+        """
+        The function `get_comments` retrieves comments for each tweet in a list of dictionaries by
+        opening the tweet's URL, scrolling to load more comments, and appending the comments to the
+        tweet's dictionary.
+        
+        :param tweets: The `tweets` parameter is a list of dictionaries. Each dictionary represents a
+        tweet and contains information such as the tweet's URL and the number of replies it has
+        :return: In this code, nothing is being explicitly returned. However, the code is modifying the
+        "tweets" list of dictionaries by adding the "comments" key to each tweet dictionary. The
+        "comments" key contains a list of comments for each tweet.
+        """
 
         print("Getting comments for each tweet...")
         # for each tweet in the list of dicts, take the url and the number of replies
